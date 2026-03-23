@@ -1,0 +1,57 @@
+{
+  "name": "img-opt",
+  "version": "1.0.0",
+  "description": "Download external images, compress to WebP, and rewrite source URLs. One command, zero config.",
+  "type": "module",
+  "bin": {
+    "img-opt": "./src/cli.js"
+  },
+  "exports": {
+    ".": "./src/run-all.js",
+    "./download": "./src/download.js",
+    "./compress": "./src/compress.js",
+    "./replace": "./src/replace.js"
+  },
+  "files": [
+    "src/",
+    "image-assets.config.example.js",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test tests/",
+    "prepublishOnly": "npm test",
+    "images": "node src/run-all.js",
+    "images:download": "node src/download.js",
+    "images:compress": "node src/compress.js",
+    "images:replace": "node src/replace.js"
+  },
+  "keywords": [
+    "images", "webp", "optimize", "compress", "sharp",
+    "vite", "nextjs", "astro", "performance", "image-optimization",
+    "cli", "download", "devtools"
+  ],
+  "license": "MIT",
+  "author": "Nometria <hello@nometria.com>",
+  "homepage": "https://github.com/nometria/img-opt#readme",
+  "bugs": {
+    "url": "https://github.com/nometria/img-opt/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nometria/img-opt.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "sharp": ">=0.32.0"
+  },
+  "peerDependenciesMeta": {
+    "sharp": { "optional": true }
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
