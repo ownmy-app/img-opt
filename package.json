@@ -1,6 +1,6 @@
 {
   "name": "@nometria-ai/img-opt",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Download external images, compress to WebP, and rewrite source URLs. One command, zero config.",
   "type": "module",
   "bin": {
