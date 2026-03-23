@@ -1,5 +1,5 @@
 {
-  "name": "img-opt",
+  "name": "@nometria-ai/img-opt",
   "version": "1.0.0",
   "description": "Download external images, compress to WebP, and rewrite source URLs. One command, zero config.",
   "type": "module",
@@ -28,9 +28,19 @@
     "images:replace": "node src/replace.js"
   },
   "keywords": [
-    "images", "webp", "optimize", "compress", "sharp",
-    "vite", "nextjs", "astro", "performance", "image-optimization",
-    "cli", "download", "devtools"
+    "images",
+    "webp",
+    "optimize",
+    "compress",
+    "sharp",
+    "vite",
+    "nextjs",
+    "astro",
+    "performance",
+    "image-optimization",
+    "cli",
+    "download",
+    "devtools"
   ],
   "license": "MIT",
   "author": "Nometria <hello@nometria.com>",
@@ -49,7 +59,9 @@
     "sharp": ">=0.32.0"
   },
   "peerDependenciesMeta": {
-    "sharp": { "optional": true }
+    "sharp": {
+      "optional": true
+    }
   },
   "engines": {
     "node": ">=18"

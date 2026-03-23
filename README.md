@@ -1,7 +1,7 @@
 # img-opt
 
-[![npm version](https://img.shields.io/npm/v/img-opt.svg)](https://www.npmjs.com/package/img-opt)
-[![npm downloads](https://img.shields.io/npm/dm/img-opt.svg)](https://www.npmjs.com/package/img-opt)
+[![npm version](https://img.shields.io/npm/v/%40nometria-ai%2Fimg-opt.svg)](https://www.npmjs.com/package/@nometria-ai/img-opt)
+[![npm downloads](https://img.shields.io/npm/dm/%40nometria-ai%2Fimg-opt.svg)](https://www.npmjs.com/package/@nometria-ai/img-opt)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -15,10 +15,10 @@ Eliminates external image dependencies, cuts image payload by 60–80%, and upda
 
 ```bash
 # Install as a dev dependency
-npm install --save-dev img-opt sharp
+npm install --save-dev @nometria-ai/img-opt sharp
 
 # Copy the example config to your project root
-cp node_modules/img-opt/image-assets.config.example.js image-assets.config.js
+cp node_modules/@nometria-ai/img-opt/image-assets.config.example.js image-assets.config.js
 
 # Edit image-assets.config.js to add your image sources, then run:
 npx img-opt
@@ -32,10 +32,10 @@ That's it. Your external images are now local WebP files and every URL in `src/`
 
 ```bash
 # As a dev dependency (recommended)
-npm install --save-dev img-opt sharp
+npm install --save-dev @nometria-ai/img-opt sharp
 
 # Or globally
-npm install -g img-opt
+npm install -g @nometria-ai/img-opt
 ```
 
 > `sharp` is a peer dependency — it handles the WebP conversion. Install it alongside `img-opt`.
@@ -158,10 +158,10 @@ Results vary by image content and starting format. WebP conversion at quality 82
 ## Use as a library
 
 ```js
-import { downloadImages, compressImages, replaceUrls } from 'img-opt';
+import { downloadImages, compressImages, replaceUrls } from '@nometria-ai/img-opt';
 
 // Or run the full pipeline programmatically
-import { runPipeline } from 'img-opt';
+import { runPipeline } from '@nometria-ai/img-opt';
 
 await runPipeline({
   imagesDir: 'public/images',
