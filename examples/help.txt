@@ -1,0 +1,10 @@
+img-opt CLI — run the full image optimization pipeline.
+
+Usage:
+  npx img-opt           # run all 3 steps (download → compress → replace)
+  npx img-opt all       # same as above
+  npx img-opt download  # download external images only
+  npx img-opt compress  # compress to WebP only
+  npx img-opt replace   # rewrite source URLs only
+
+Configuration: image-assets.config.js in your project root

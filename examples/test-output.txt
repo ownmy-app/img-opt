@@ -1,0 +1,35 @@
+Unknown command: --help. Use: all | download | compress | replace
+✖ CLI prints help and exits 0 (50.336875ms)
+✔ CLI rejects unknown flags gracefully (53.439083ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 1
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 171.40725
+
+✖ failing tests:
+
+test at tests/cli.test.js:10:1
+✖ CLI prints help and exits 0 (50.336875ms)
+  Error: Command failed: node /private/tmp/ownmy-releases/img-opt/src/cli.js --help
+  Unknown command: --help. Use: all | download | compress | replace
+  
+      at genericNodeError (node:internal/errors:998:15)
+      at wrappedFn (node:internal/errors:543:14)
+      at checkExecSyncError (node:child_process:925:11)
+      at execSync (node:child_process:997:15)
+      at TestContext.<anonymous> (file:///private/tmp/ownmy-releases/img-opt/tests/cli.test.js:11:15)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.start (node:internal/test_runner/test:1003:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {
+    status: 1,
+    signal: null,
+    output: [ null, '', 'Unknown command: --help. Use: all | download | compress | replace\n' ],
+    pid: 16180,
+    stdout: '',
+    stderr: 'Unknown command: --help. Use: all | download | compress | replace\n'
+  }

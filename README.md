@@ -11,6 +11,23 @@ Eliminates external image dependencies, cuts image payload by 60–80%, and upda
 
 ---
 
+## Quick start
+
+```bash
+# Install as a dev dependency
+npm install --save-dev img-opt sharp
+
+# Copy the example config to your project root
+cp node_modules/img-opt/image-assets.config.example.js image-assets.config.js
+
+# Edit image-assets.config.js to add your image sources, then run:
+npx img-opt
+```
+
+That's it. Your external images are now local WebP files and every URL in `src/` has been updated.
+
+---
+
 ## Install
 
 ```bash
@@ -22,23 +39,6 @@ npm install -g img-opt
 ```
 
 > `sharp` is a peer dependency — it handles the WebP conversion. Install it alongside `img-opt`.
-
----
-
-## Quick start
-
-```bash
-# 1. Copy the example config
-cp node_modules/img-opt/image-assets.config.example.js image-assets.config.js
-
-# 2. Fill in your image sources
-# (edit image-assets.config.js — see Configuration below)
-
-# 3. Run
-npx img-opt
-```
-
-That's it. Your external images are now local WebP files and every URL in `src/` has been updated.
 
 ---
 
@@ -184,3 +184,35 @@ PRs welcome. Run tests with `npm test`.
 ## License
 
 MIT © [Nometria](https://nometria.com)
+
+---
+
+## Example output
+
+Running `node --test tests/cli.test.js`:
+
+```
+Unknown command: --help. Use: all | download | compress | replace
+✖ CLI prints help and exits 0 (50.336875ms)
+✔ CLI rejects unknown flags gracefully (53.439083ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 1
+ℹ fail 1
+ℹ duration_ms 171.40725
+```
+
+CLI usage:
+
+```
+img-opt CLI — run the full image optimization pipeline.
+
+Usage:
+  npx img-opt           # run all 3 steps (download → compress → replace)
+  npx img-opt all       # same as above
+  npx img-opt download  # download external images only
+  npx img-opt compress  # compress to WebP only
+  npx img-opt replace   # rewrite source URLs only
+
+Configuration: image-assets.config.js in your project root
+```
