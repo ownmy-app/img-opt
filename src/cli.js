@@ -30,6 +30,23 @@ function run(scriptPath) {
 }
 
 const [,, cmd = 'all'] = process.argv;
+
+if (cmd === '--help' || cmd === '-h') {
+  console.log([
+    'img-opt — download external images, compress to WebP, rewrite source URLs',
+    '',
+    'Usage:',
+    '  npx img-opt                # full pipeline (download → compress → replace)',
+    '  npx img-opt download       # fetch external images to public/images/',
+    '  npx img-opt compress       # convert PNG/JPG → WebP in place',
+    '  npx img-opt replace        # rewrite external URLs in src/ files',
+    '',
+    'Config: image-assets.config.js in project root',
+    '  cp node_modules/img-opt/image-assets.config.example.js image-assets.config.js',
+  ].join('\n'));
+  process.exit(0);
+}
+
 const script = SCRIPTS[cmd];
 
 if (!script) {
