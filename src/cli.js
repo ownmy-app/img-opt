@@ -42,7 +42,7 @@ if (cmd === '--help' || cmd === '-h') {
     '  npx img-opt replace        # rewrite external URLs in src/ files',
     '',
     'Config: image-assets.config.js in project root',
-    '  cp node_modules/img-opt/image-assets.config.example.js image-assets.config.js',
+    '  cp node_modules/@nometria-ai/img-opt/image-assets.config.example.js image-assets.config.js',
   ].join('\n'));
   process.exit(0);
 }

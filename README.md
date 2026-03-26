@@ -17,6 +17,10 @@ Eliminates external image dependencies, cuts image payload by 60–80%, and upda
 # Install as a dev dependency
 npm install --save-dev @nometria-ai/img-opt sharp
 
+# The config uses ESM syntax — make sure your package.json has "type": "module"
+# If it doesn't, add it:
+npm pkg set type=module
+
 # Copy the example config to your project root
 cp node_modules/@nometria-ai/img-opt/image-assets.config.example.js image-assets.config.js
 
@@ -192,14 +196,13 @@ MIT © [Nometria](https://nometria.com)
 Running `node --test tests/cli.test.js`:
 
 ```
-Unknown command: --help. Use: all | download | compress | replace
-✖ CLI prints help and exits 0 (50.336875ms)
-✔ CLI rejects unknown flags gracefully (53.439083ms)
+✔ CLI prints help and exits 0 (63.826916ms)
+✔ CLI rejects unknown flags gracefully (83.275292ms)
 ℹ tests 2
 ℹ suites 0
-ℹ pass 1
-ℹ fail 1
-ℹ duration_ms 171.40725
+ℹ pass 2
+ℹ fail 0
+ℹ duration_ms 242.467167
 ```
 
 CLI usage:

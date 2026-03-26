@@ -17,7 +17,7 @@ function run(scriptName, allowFail = false) {
     const child = spawn('node', [path.join(scriptDir, scriptName)], {
       stdio: 'inherit',
       cwd: process.cwd(),
-      shell: true,
+      shell: false,
     });
     child.on('close', (code) => {
       if (code === 0) return resolve(true);
