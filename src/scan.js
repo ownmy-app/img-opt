@@ -19,22 +19,32 @@ const IMAGE_EXTS = new Set(['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'avif', 
 const VIDEO_EXTS = new Set(['mp4', 'mov', 'avi', 'webm', 'mkv', 'm4v']);
 
 // ── URL extraction patterns ─────────────────────────────────────────────
-// Each pattern must have a capture group for the URL.
+// Each pattern has a capture group for the URL and an optional context hint.
+// context: 'image' means the URL is in an image context (img src, css url, markdown image)
+//          'video' means video context (<video src, <source src)
+//          'media' means either (poster, data-src)
+//          undefined means no context hint — rely on extension matching only
 const URL_PATTERNS = [
-  // HTML attributes: src="...", poster="...", data-src="..."
-  /(?:src|poster|data-src)\s*=\s*["'](https?:\/\/[^"'\s>]+)/gi,
+  // <img src="...">, <Image src="..."> — image context
+  { rx: /<(?:img|Image)\s[^>]*?src\s*=\s*["'](https?:\/\/[^"'\s>]+)/gi, context: 'image' },
 
-  // srcset entries: srcset="url 400w, url 800w"
-  /srcset\s*=\s*["']([^"']+)/gi,
+  // <video src="...">, <source src="..."> — video context
+  { rx: /<(?:video|source)\s[^>]*?src\s*=\s*["'](https?:\/\/[^"'\s>]+)/gi, context: 'video' },
 
-  // CSS url(...)
-  /url\(\s*["']?(https?:\/\/[^"')\s]+)/gi,
+  // Generic src="...", poster="...", data-src="..." — media context
+  { rx: /(?:src|poster|data-src)\s*=\s*["'](https?:\/\/[^"'\s>]+)/gi, context: 'media' },
 
-  // Markdown images: ![alt](url)
-  /!\[[^\]]*\]\((https?:\/\/[^)\s]+)\)/gi,
+  // srcset entries
+  { rx: /srcset\s*=\s*["']([^"']+)/gi, context: 'image' },
 
-  // Bare string literals with asset extensions
-  /["'`](https?:\/\/[^"'`\s]+\.(?:png|jpe?g|gif|svg|webp|avif|bmp|ico|mp4|mov|avi|webm|mkv|m4v)(?:\?[^"'`\s]*)?)/gi,
+  // CSS url(...) — image context (backgrounds, etc.)
+  { rx: /url\(\s*["']?(https?:\/\/[^"')\s]+)/gi, context: 'image' },
+
+  // Markdown images: ![alt](url) — image context
+  { rx: /!\[[^\]]*\]\((https?:\/\/[^)\s]+)\)/gi, context: 'image' },
+
+  // Bare string literals with known asset extensions — no context hint
+  { rx: /["'`](https?:\/\/[^"'`\s]+\.(?:png|jpe?g|gif|svg|webp|avif|bmp|ico|mp4|mov|avi|webm|mkv|m4v)(?:\?[^"'`\s]*)?)/gi, context: undefined },
 ];
 
 // ── Helpers ─────────────────────────────────────────────────────────────
@@ -109,7 +119,7 @@ export async function scanForUrls({ projectRoot, scanDirs, scanExtensions, ignor
     const content = fs.readFileSync(filePath, 'utf8');
     const relPath = path.relative(projectRoot, filePath);
 
-    for (const pattern of URL_PATTERNS) {
+    for (const { rx: pattern, context } of URL_PATTERNS) {
       // Reset regex state
       pattern.lastIndex = 0;
       let match;
@@ -136,7 +146,10 @@ export async function scanForUrls({ projectRoot, scanDirs, scanExtensions, ignor
           let type;
           if (IMAGE_EXTS.has(ext)) type = 'image';
           else if (VIDEO_EXTS.has(ext)) type = 'video';
-          else continue; // skip URLs without known media extension
+          else if (context === 'image') type = 'image';   // context hint (e.g. <img>, css url())
+          else if (context === 'video') type = 'video';   // context hint (e.g. <video>)
+          else if (context === 'media') type = 'image';   // default media context → image
+          else continue; // no extension AND no context → skip
 
           if (urlMap.has(url)) {
             urlMap.get(url).foundIn.add(relPath);

@@ -3,6 +3,14 @@
 All notable changes to `img-opt` are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.1.1] - 2026-03-26
+
+### Fixed
+- **replace.js now auto-scans** — when no `sources` config exists, replace runs the scanner to discover the URL→file mapping, so external URLs are correctly rewritten to local `.webp`/`.webm` paths
+- **scan.js detects URLs without file extensions** — URLs in image contexts (`<img src>`, CSS `url()`, markdown `![]()`) are now classified as images even without a `.png`/`.jpg` extension (e.g. Unsplash URLs like `photo-123?w=1920`)
+- URL patterns now use context-aware matching: `<img>` → image, `<video>` → video, `url()` → image
+- replace.js only creates replacements when the `.webp`/`.webm` file actually exists on disk
+
 ## [2.1.0] - 2026-03-26
 
 ### Added

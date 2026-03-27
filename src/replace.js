@@ -13,6 +13,7 @@ import path from 'path';
 import { getConfig } from './lib/get-config.js';
 import { walkDir } from './lib/walk-dir.js';
 import { buildIgnoreFilter } from './lib/ignore.js';
+import { scanForUrls } from './scan.js';
 
 function escapeRegex(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -34,10 +35,29 @@ async function main() {
   const replacements = [];
 
   // ── Image source URL replacements ──────────────────────────────────
-  for (const { url, file } of config.sources || []) {
-    if (shouldIgnore(url)) continue;
+  let imageSources = (config.sources || []).filter((s) => !shouldIgnore(s.url));
+  let videoSources = (config.videoSources || []).filter((s) => !shouldIgnore(s.url));
+
+  // Auto-scan: if no manual sources, discover URLs from codebase
+  if (!imageSources.length && !videoSources.length && config.autoScan) {
+    const scanResult = await scanForUrls({
+      projectRoot,
+      scanDirs: config.replaceInDirs,
+      scanExtensions: config.replaceExtensions,
+      ignore: config.ignore,
+    });
+    imageSources = scanResult.images;
+    videoSources = scanResult.videos;
+  }
+
+  // Map each scanned/configured image URL → /images/base.webp
+  for (const { url, file } of imageSources) {
     const base = path.basename(file, path.extname(file));
-    replacements.push({ from: url, to: `${imagesDirWeb}/${base}.webp` });
+    const webpFile = `${base}.webp`;
+    // Only replace if the .webp file actually exists (was downloaded + compressed)
+    if (fs.existsSync(path.join(imagesDir, webpFile))) {
+      replacements.push({ from: url, to: `${imagesDirWeb}/${webpFile}` });
+    }
   }
 
   // ── Local image extension replacements in imagesDir (.png/.jpg → .webp)
@@ -95,10 +115,12 @@ async function main() {
   }
 
   // ── Video source URL replacements ──────────────────────────────────
-  for (const { url, file } of config.videoSources || []) {
-    if (shouldIgnore(url)) continue;
+  for (const { url, file } of videoSources) {
     const base = path.basename(file, path.extname(file));
-    replacements.push({ from: url, to: `${videosDirWeb}/${base}.webm` });
+    const webmFile = `${base}.webm`;
+    if (fs.existsSync(path.join(videosDir, webmFile))) {
+      replacements.push({ from: url, to: `${videosDirWeb}/${webmFile}` });
+    }
   }
 
   // ── Local video extension replacements in videosDir (.mp4/.mov → .webm)

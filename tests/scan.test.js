@@ -106,6 +106,23 @@ test('scan deduplicates same URL found in multiple files', () => {
   }
 });
 
+test('scan detects URLs without file extensions in image contexts', () => {
+  const tmpDir = mkTmp();
+  fs.writeFileSync(path.join(tmpDir, 'src', 'hero.jsx'), `
+    <div style={{backgroundImage: \`url('https://images.unsplash.com/photo-123456?w=1920&q=80')\`}} />
+    <img src="https://cdn.example.com/api/resize/photo-789" />
+  `);
+
+  try {
+    const out = execSync(`node ${CLI}`, { encoding: 'utf8', cwd: tmpDir });
+    assert.match(out, /photo-123456/);
+    assert.match(out, /photo-789/);
+    assert.match(out, /2 image/);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});
+
 test('scan respects ignore patterns — skips matching URLs', () => {
   const tmpDir = mkTmp();
   // Create config with ignore
