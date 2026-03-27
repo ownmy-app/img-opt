@@ -12,6 +12,7 @@ import fs from 'fs';
 import path from 'path';
 import { getConfig } from './lib/get-config.js';
 import { walkDir } from './lib/walk-dir.js';
+import { buildIgnoreFilter } from './lib/ignore.js';
 
 // ── Extensions ──────────────────────────────────────────────────────────
 const IMAGE_EXTS = new Set(['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'avif', 'bmp', 'ico']);
@@ -89,9 +90,11 @@ function parseSrcset(srcsetValue) {
  * @param {string} options.projectRoot - absolute path to project root
  * @param {string[]} options.scanDirs - directories to scan (relative to root)
  * @param {string[]} options.scanExtensions - file extensions to read
+ * @param {string[]} [options.ignore] - patterns to ignore (substrings or /regex/)
  * @returns {{ images: {url: string, file: string, foundIn: string[]}[], videos: {url: string, file: string, foundIn: string[]}[] }}
  */
-export async function scanForUrls({ projectRoot, scanDirs, scanExtensions }) {
+export async function scanForUrls({ projectRoot, scanDirs, scanExtensions, ignore = [] }) {
+  const shouldIgnore = buildIgnoreFilter(ignore);
   const dirs = scanDirs.map((d) => path.join(projectRoot, d));
   const allFiles = [];
   for (const d of dirs) {
@@ -122,10 +125,11 @@ export async function scanForUrls({ projectRoot, scanDirs, scanExtensions }) {
           const url = rawUrl.replace(/['"`;,)\s]+$/, '');
           if (!url || url.length < 10) continue;
 
-          // Skip data URIs, relative URLs, localhost
+          // Skip data URIs, relative URLs, localhost, ignored patterns
           if (/^data:/i.test(url)) continue;
           if (!/^https?:\/\//i.test(url)) continue;
           if (/localhost|127\.0\.0\.1/i.test(url)) continue;
+          if (shouldIgnore(url)) continue;
 
           // Classify as image or video
           const ext = urlExtension(url);
@@ -178,6 +182,7 @@ async function main() {
     projectRoot,
     scanDirs: config.replaceInDirs,
     scanExtensions: config.replaceExtensions,
+    ignore: config.ignore,
   });
 
   if (!images.length && !videos.length) {

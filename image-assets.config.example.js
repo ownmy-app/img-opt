@@ -14,6 +14,15 @@ export default {
   /** Auto-scan codebase for external image/video URLs when sources is empty (default: true) */
   autoScan: true,
 
+  /** Also compress local uncompressed images/videos found in the project (default: true) */
+  compressLocal: true,
+
+  /** Patterns to ignore — substring match or /regex/. Applied to URLs and file paths. */
+  ignore: [
+    // 'cdn.dynamic-api.com',
+    // '/user-avatar-\\d+/',
+  ],
+
   /** Directory where images are saved, relative to project root */
   imagesDir: 'public/images',
 

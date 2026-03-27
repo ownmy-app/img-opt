@@ -10,6 +10,7 @@ import fs from 'fs';
 import path from 'path';
 import { getConfig } from './lib/get-config.js';
 import { scanForUrls } from './scan.js';
+import { buildIgnoreFilter } from './lib/ignore.js';
 
 function download(url) {
   return new Promise((resolve, reject) => {
@@ -57,8 +58,10 @@ async function downloadList(sources, outDir, label) {
 async function main() {
   const { config, projectRoot } = await getConfig();
 
-  let imageSources = config.sources || [];
-  let videoSources = config.videoSources || [];
+  const shouldIgnore = buildIgnoreFilter(config.ignore);
+
+  let imageSources = (config.sources || []).filter((s) => !shouldIgnore(s.url));
+  let videoSources = (config.videoSources || []).filter((s) => !shouldIgnore(s.url));
 
   // Auto-scan if no sources configured
   if (!imageSources.length && !videoSources.length && config.autoScan) {
@@ -67,6 +70,7 @@ async function main() {
       projectRoot,
       scanDirs: config.replaceInDirs,
       scanExtensions: config.replaceExtensions,
+      ignore: config.ignore,
     });
     imageSources = scanResult.images;
     videoSources = scanResult.videos;

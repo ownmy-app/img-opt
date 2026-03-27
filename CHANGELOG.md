@@ -3,6 +3,19 @@
 All notable changes to `img-opt` are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.1.0] - 2026-03-26
+
+### Added
+- **Local compression**: automatically finds and compresses uncompressed PNG/JPG/MP4 files anywhere in the project, not just downloaded assets (`compressLocal: true` by default)
+- **Ignore patterns**: skip specific URLs or file paths from scanning, downloading, and compression via `ignore: ['pattern', '/regex/']` config option
+- Shared `ignore.js` helper supporting both substring and regex patterns
+
+### Changed
+- `compress.js` now scans `replaceInDirs` + `public/` for local uncompressed images (skips files with existing .webp sibling)
+- `video-compress.js` now scans for local uncompressed videos the same way
+- `replace.js` handles in-place path rewrites for locally compressed assets (both absolute and relative paths)
+- All modules respect the `ignore` config — ignored URLs are skipped in scan, download, and compression
+
 ## [2.0.0] - 2026-03-26
 
 ### Added

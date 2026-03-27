@@ -88,6 +88,28 @@ When no `sources` are configured, img-opt scans your codebase and detects:
 
 Run `npx img-opt scan` to preview what will be found before downloading.
 
+### Local asset compression
+
+Even without external URLs, img-opt compresses **local** uncompressed images and videos already in your project. It scans `src/`, `public/`, and any configured `replaceInDirs` for `.png`, `.jpg`, `.mp4`, etc., compresses them in place, and rewrites all references.
+
+This means dropping a `.png` into `src/assets/` and running `npx img-opt` will automatically convert it to `.webp` and update your imports. Set `compressLocal: false` to disable.
+
+### Ignore patterns
+
+Use the `ignore` config to skip certain URLs or file paths:
+
+```js
+export default {
+  ignore: [
+    'cdn.dynamic-api.com',        // skip any URL containing this string
+    '/user-avatar-\\d+/',         // regex: skip dynamic avatar URLs
+    'src/assets/brand-logo',      // skip a specific local file
+  ],
+};
+```
+
+Ignored items are excluded from scanning, downloading, and compression.
+
 ### Pipeline
 
 1. **Scan** — auto-discovers external image and video URLs in your source files
@@ -105,8 +127,9 @@ Create `image-assets.config.js` in your project root to override defaults:
 ```js
 export default {
   autoScan: true,                    // scan codebase for URLs (default: true)
-  imagesDir: 'public/images',       // where to save images
-  videosDir: 'public/videos',       // where to save videos
+  compressLocal: true,               // compress local uncompressed assets too (default: true)
+  imagesDir: 'public/images',       // where to save downloaded images
+  videosDir: 'public/videos',       // where to save downloaded videos
   replaceInDirs: ['src'],           // directories to scan
   compress: {
     format: 'webp',
@@ -119,6 +142,11 @@ export default {
     maxWidth: 1920,
     removeOriginals: true,
   },
+  // Skip certain URLs or file paths
+  ignore: [
+    // 'cdn.dynamic-api.com',       // substring match
+    // '/avatar-\\d+/',             // regex match
+  ],
   // Manual sources (optional — auto-scanned if empty)
   sources: [],
   videoSources: [],
@@ -130,6 +158,8 @@ export default {
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `autoScan` | boolean | `true` | Auto-discover external URLs when sources is empty |
+| `compressLocal` | boolean | `true` | Also compress local uncompressed images/videos in the project |
+| `ignore` | string[] | `[]` | Patterns to skip (substring or `/regex/`). Applied to URLs and file paths |
 | `imagesDir` | string | `'public/images'` | Directory where images are saved |
 | `videosDir` | string | `'public/videos'` | Directory where videos are saved |
 | `replaceInDirs` | string[] | `['src']` | Directories scanned for URL replacement |

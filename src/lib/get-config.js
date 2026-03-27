@@ -18,6 +18,8 @@ const DEFAULTS = {
   compress: { format: 'webp', quality: 82, removeOriginals: true },
   videoCompress: { format: 'webm', quality: 'good', maxWidth: 1920, removeOriginals: true },
   autoScan: true,
+  compressLocal: true,
+  ignore: [],
   sources: [],
   videoSources: [],
 };
@@ -63,6 +65,8 @@ export async function getConfig() {
       compress: config.compress ?? DEFAULTS.compress,
       videoCompress: config.videoCompress ?? DEFAULTS.videoCompress,
       autoScan: config.autoScan ?? DEFAULTS.autoScan,
+      compressLocal: config.compressLocal ?? DEFAULTS.compressLocal,
+      ignore: config.ignore ?? DEFAULTS.ignore,
       sources: config.sources ?? DEFAULTS.sources,
       videoSources: config.videoSources ?? DEFAULTS.videoSources,
     },
