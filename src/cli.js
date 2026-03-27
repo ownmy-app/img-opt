@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 /**
- * img-opt CLI — run the full pipeline from any project directory.
+ * img-opt CLI — download, compress, and rewrite image + video assets.
  *
  * Usage:
- *   npx img-opt           # run all 3 steps
- *   npx img-opt download  # download only
- *   npx img-opt compress  # compress only
- *   npx img-opt replace   # URL replace only
+ *   npx img-opt               # full pipeline (scan → download → compress → replace)
+ *   npx img-opt scan           # discover external URLs in codebase (dry-run)
+ *   npx img-opt download       # download images + videos
+ *   npx img-opt compress       # compress images to WebP (Sharp)
+ *   npx img-opt video          # compress videos to WebM (ffmpeg)
+ *   npx img-opt replace        # rewrite URLs in source files
  */
 
 import { spawn } from 'child_process';
@@ -19,6 +21,8 @@ const SCRIPTS = {
   download: path.join(__dirname, 'download.js'),
   compress: path.join(__dirname, 'compress.js'),
   replace:  path.join(__dirname, 'replace.js'),
+  scan:     path.join(__dirname, 'scan.js'),
+  video:    path.join(__dirname, 'video-compress.js'),
   all:      path.join(__dirname, 'run-all.js'),
 };
 
@@ -33,15 +37,20 @@ const [,, cmd = 'all'] = process.argv;
 
 if (cmd === '--help' || cmd === '-h') {
   console.log([
-    'img-opt — download external images, compress to WebP, rewrite source URLs',
+    'img-opt — download, compress, and rewrite image + video assets',
     '',
     'Usage:',
     '  npx img-opt                # full pipeline (download → compress → replace)',
-    '  npx img-opt download       # fetch external images to public/images/',
-    '  npx img-opt compress       # convert PNG/JPG → WebP in place',
-    '  npx img-opt replace        # rewrite external URLs in src/ files',
+    '  npx img-opt scan           # discover external image/video URLs (dry-run)',
+    '  npx img-opt download       # fetch external images + videos',
+    '  npx img-opt compress       # convert PNG/JPG → WebP via Sharp',
+    '  npx img-opt video          # convert MP4/MOV → WebM via ffmpeg',
+    '  npx img-opt replace        # rewrite external URLs in source files',
     '',
-    'Config: image-assets.config.js in project root',
+    'Auto-scan: when no sources are configured, img-opt scans your codebase',
+    'for external image and video URLs automatically. No config file needed.',
+    '',
+    'Config (optional): image-assets.config.js in project root',
     '  cp node_modules/@nometria-ai/img-opt/image-assets.config.example.js image-assets.config.js',
   ].join('\n'));
   process.exit(0);
@@ -50,7 +59,7 @@ if (cmd === '--help' || cmd === '-h') {
 const script = SCRIPTS[cmd];
 
 if (!script) {
-  console.error(`Unknown command: ${cmd}. Use: all | download | compress | replace`);
+  console.error(`Unknown command: ${cmd}. Use: all | scan | download | compress | video | replace`);
   process.exit(1);
 }
 

@@ -1,6 +1,7 @@
 /**
  * Resolve image-assets config and project root. Usable from any project.
  * Config path: IMAGE_ASSETS_CONFIG env, or scripts/image-assets.config.js or image-assets.config.js in cwd.
+ * Config file is optional — sensible defaults are used when absent (auto-scan kicks in).
  */
 
 import fs from 'fs';
@@ -8,6 +9,18 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const DEFAULTS = {
+  imagesDir: 'public/images',
+  videosDir: 'public/videos',
+  replaceInDirs: ['src'],
+  replaceExtensions: ['.js', '.jsx', '.ts', '.tsx', '.html', '.vue', '.svelte', '.md', '.mdx', '.css', '.astro'],
+  compress: { format: 'webp', quality: 82, removeOriginals: true },
+  videoCompress: { format: 'webm', quality: 'good', maxWidth: 1920, removeOriginals: true },
+  autoScan: true,
+  sources: [],
+  videoSources: [],
+};
 
 export async function getConfig() {
   const cwd = process.cwd();
@@ -26,10 +39,13 @@ export async function getConfig() {
     }
   }
 
+  // No config file — return defaults (auto-scan will discover assets)
   if (!configPath) {
-    throw new Error(
-      'Image assets config not found. Create scripts/image-assets.config.js or set IMAGE_ASSETS_CONFIG. See scripts/image-assets.config.js for a template.'
-    );
+    return {
+      config: { ...DEFAULTS },
+      projectRoot: cwd,
+      configPath: null,
+    };
   }
 
   const configDir = path.dirname(configPath);
@@ -40,11 +56,15 @@ export async function getConfig() {
 
   return {
     config: {
-      imagesDir: config.imagesDir ?? 'public/images',
-      replaceInDirs: config.replaceInDirs ?? ['src'],
-      replaceExtensions: config.replaceExtensions ?? ['.js', '.jsx', '.ts', '.tsx', '.html', '.vue', '.svelte', '.md', '.mdx'],
-      compress: config.compress ?? { format: 'webp', quality: 82, removeOriginals: true },
-      sources: config.sources ?? [],
+      imagesDir: config.imagesDir ?? DEFAULTS.imagesDir,
+      videosDir: config.videosDir ?? DEFAULTS.videosDir,
+      replaceInDirs: config.replaceInDirs ?? DEFAULTS.replaceInDirs,
+      replaceExtensions: config.replaceExtensions ?? DEFAULTS.replaceExtensions,
+      compress: config.compress ?? DEFAULTS.compress,
+      videoCompress: config.videoCompress ?? DEFAULTS.videoCompress,
+      autoScan: config.autoScan ?? DEFAULTS.autoScan,
+      sources: config.sources ?? DEFAULTS.sources,
+      videoSources: config.videoSources ?? DEFAULTS.videoSources,
     },
     projectRoot: resolvedRoot,
     configPath,

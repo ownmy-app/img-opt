@@ -1,29 +1,36 @@
 /**
- * image-assets.config.js — copy this to your project root.
+ * image-assets.config.js — copy this to your project root (optional).
  *
- * img-opt looks for this file in (in order):
- *   $IMAGE_ASSETS_CONFIG env var
- *   scripts/image-assets.config.js
- *   image-assets.config.js  (project root)
+ * img-opt works with ZERO config — it auto-scans your codebase for external
+ * image and video URLs. Use this file only if you want to override defaults
+ * or manually specify sources.
  *
  * Workflow:
- *   1. `npx img-opt download` — fetches all URLs to imagesDir
- *   2. `npx img-opt compress` — converts to WebP at target quality
- *   3. `npx img-opt replace`  — rewrites every URL in source files
- *   (or just `npx img-opt` to run all three)
+ *   npx img-opt              # full pipeline (auto-scan → download → compress → replace)
+ *   npx img-opt scan         # preview what URLs will be found (dry-run)
+ *   npx img-opt download     # download images + videos
+ *   npx img-opt compress     # compress images to WebP (Sharp)
+ *   npx img-opt video        # compress videos to WebM (ffmpeg)
+ *   npx img-opt replace      # rewrite URLs in source files
  */
 
 export default {
+  /** Auto-scan codebase for external image/video URLs when sources is empty (default: true) */
+  autoScan: true,
+
   /** Directory where images are saved, relative to project root */
   imagesDir: 'public/images',
+
+  /** Directory where videos are saved, relative to project root */
+  videosDir: 'public/videos',
 
   /** Directories to scan for URL replacement */
   replaceInDirs: ['src'],
 
   /** File extensions to scan when rewriting URLs */
-  replaceExtensions: ['.js', '.jsx', '.ts', '.tsx', '.html', '.vue', '.svelte', '.md', '.mdx'],
+  replaceExtensions: ['.js', '.jsx', '.ts', '.tsx', '.html', '.vue', '.svelte', '.md', '.mdx', '.css', '.astro'],
 
-  /** Compression settings */
+  /** Image compression settings (requires sharp: npm i -D sharp) */
   compress: {
     format: 'webp',
     quality: 82,
@@ -31,27 +38,39 @@ export default {
     removeOriginals: true,
   },
 
+  /** Video compression settings (requires ffmpeg installed on system) */
+  videoCompress: {
+    format: 'webm',
+    quality: 'good',       // 'fast' | 'good' | 'best'
+    maxWidth: 1920,        // scale down videos wider than this
+    removeOriginals: true, // delete original after conversion
+  },
+
   /**
-   * External images to download.
+   * External images to download (optional — auto-scanned if empty).
    * After compression, every occurrence of `url` in source files
    * is replaced with `/images/<filename>.webp`.
    */
   sources: [
-    {
-      url: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=1200',
-      file: 'hero-banner.jpg',
-    },
-    {
-      url: 'https://cdn.example.com/assets/logo-v3.png',
-      file: 'logo.png',
-    },
-    {
-      url: 'https://storage.googleapis.com/mybucket/team/founder-portrait.jpg',
-      file: 'founder.jpg',
-    },
-    {
-      url: 'https://res.cloudinary.com/demo/image/upload/sample.jpg',
-      file: 'product-sample.jpg',
-    },
+    // {
+    //   url: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=1200',
+    //   file: 'hero-banner.jpg',
+    // },
+    // {
+    //   url: 'https://cdn.example.com/assets/logo-v3.png',
+    //   file: 'logo.png',
+    // },
+  ],
+
+  /**
+   * External videos to download (optional — auto-scanned if empty).
+   * After compression, every occurrence of `url` in source files
+   * is replaced with `/videos/<filename>.webm`.
+   */
+  videoSources: [
+    // {
+    //   url: 'https://cdn.example.com/promo-video.mp4',
+    //   file: 'promo.mp4',
+    // },
   ],
 };

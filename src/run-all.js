@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 /**
- * Run download -> compress -> replace in sequence. Run from project root: node scripts/images-download-compress-replace.js
- * Steps: 1) Download external images to public/images  2) Compress to WebP with Sharp  3) Replace URLs in source
- * Requires: pnpm add -D sharp (then pnpm run images)
+ * Run the full asset-optimization pipeline:
+ *   1) Download external images + videos (auto-scanned or from config)
+ *   2) Compress images to WebP with Sharp
+ *   3) Compress videos to WebM with ffmpeg
+ *   4) Replace URLs in source files
+ *
+ * Requires: sharp (optional peer dep) and ffmpeg (system binary, optional).
  */
 
 import { spawn } from 'child_process';
@@ -10,11 +14,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const scriptDir = path.join(__dirname);
 
 function run(scriptName, allowFail = false) {
   return new Promise((resolve, reject) => {
-    const child = spawn('node', [path.join(scriptDir, scriptName)], {
+    const child = spawn('node', [path.join(__dirname, scriptName)], {
       stdio: 'inherit',
       cwd: process.cwd(),
       shell: false,
@@ -28,15 +31,22 @@ function run(scriptName, allowFail = false) {
 }
 
 async function main() {
-  console.log('--- 1/3 Download ---\n');
+  console.log('--- 1/4 Download ---\n');
   await run('download.js');
-  console.log('\n--- 2/3 Compress ---\n');
-  const compressed = await run('compress.js', true);
-  if (!compressed) {
-    console.log('\nSkipping replace (no WebP files). Install Sharp and re-run to compress and replace URLs:\n  pnpm add -D sharp && pnpm run images\n');
-    process.exit(1);
+
+  console.log('\n--- 2/4 Compress Images ---\n');
+  const imagesCompressed = await run('compress.js', true);
+  if (!imagesCompressed) {
+    console.log('\n  Image compression skipped. Install Sharp to enable: npm i -D sharp\n');
   }
-  console.log('\n--- 3/3 Replace URLs ---\n');
+
+  console.log('\n--- 3/4 Compress Videos ---\n');
+  const videosCompressed = await run('video-compress.js', true);
+  if (!videosCompressed) {
+    console.log('\n  Video compression skipped. Install ffmpeg to enable: brew install ffmpeg\n');
+  }
+
+  console.log('\n--- 4/4 Replace URLs ---\n');
   await run('replace.js');
   console.log('\nAll done.');
 }

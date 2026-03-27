@@ -1,7 +1,7 @@
 {
   "name": "@nometria-ai/img-opt",
-  "version": "1.0.2",
-  "description": "Download external images, compress to WebP, and rewrite source URLs. One command, zero config.",
+  "version": "2.0.0",
+  "description": "Auto-scan, download, compress (WebP + WebM), and rewrite image & video URLs. Zero config.",
   "type": "module",
   "bin": {
     "img-opt": "./src/cli.js"
@@ -10,7 +10,9 @@
     ".": "./src/run-all.js",
     "./download": "./src/download.js",
     "./compress": "./src/compress.js",
-    "./replace": "./src/replace.js"
+    "./replace": "./src/replace.js",
+    "./scan": "./src/scan.js",
+    "./video-compress": "./src/video-compress.js"
   },
   "files": [
     "src/",
@@ -23,21 +25,28 @@
     "test": "node --test tests/*.test.js",
     "prepublishOnly": "npm test",
     "images": "node src/run-all.js",
+    "images:scan": "node src/scan.js",
     "images:download": "node src/download.js",
     "images:compress": "node src/compress.js",
+    "images:video": "node src/video-compress.js",
     "images:replace": "node src/replace.js"
   },
   "keywords": [
     "images",
+    "video",
     "webp",
+    "webm",
     "optimize",
     "compress",
     "sharp",
+    "ffmpeg",
+    "auto-scan",
     "vite",
     "nextjs",
     "astro",
     "performance",
     "image-optimization",
+    "video-optimization",
     "cli",
     "download",
     "devtools"

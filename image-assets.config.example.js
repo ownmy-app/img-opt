@@ -1,5 +1,8 @@
 /**
- * image-assets.config.js  — copy this file to your project root.
+ * image-assets.config.js — copy this to your project root (optional).
+ *
+ * img-opt works with ZERO config — it auto-scans your codebase for external
+ * image and video URLs. Use this file only to override defaults.
  *
  * img-opt looks for this file in (in order):
  *   $IMAGE_ASSETS_CONFIG env var
@@ -8,30 +11,44 @@
  */
 
 export default {
+  /** Auto-scan codebase for external image/video URLs when sources is empty (default: true) */
+  autoScan: true,
+
   /** Directory where images are saved, relative to project root */
   imagesDir: 'public/images',
 
-  /** Directories to search when rewriting URLs (after compress) */
+  /** Directory where videos are saved, relative to project root */
+  videosDir: 'public/videos',
+
+  /** Directories to scan for URL replacement */
   replaceInDirs: ['src'],
 
-  /** File extensions to scan for URL replacement */
-  replaceExtensions: ['.js', '.jsx', '.ts', '.tsx', '.html', '.vue', '.svelte', '.md', '.mdx'],
+  /** File extensions to scan when rewriting URLs */
+  replaceExtensions: ['.js', '.jsx', '.ts', '.tsx', '.html', '.vue', '.svelte', '.md', '.mdx', '.css', '.astro'],
 
-  /** Compression settings */
+  /** Image compression settings (requires sharp: npm i -D sharp) */
   compress: {
     format: 'webp',
     quality: 82,
-    /** Set to false to keep original PNG/JPG alongside .webp */
     removeOriginals: true,
   },
 
-  /**
-   * External images to download.
-   * After compress, all occurrences of `url` in source files are replaced
-   * with `/images/<file base>.webp`
-   */
+  /** Video compression settings (requires ffmpeg installed) */
+  videoCompress: {
+    format: 'webm',
+    quality: 'good',       // 'fast' | 'good' | 'best'
+    maxWidth: 1920,
+    removeOriginals: true,
+  },
+
+  /** External images to download (optional — auto-scanned if empty) */
   sources: [
     // { url: 'https://example.com/hero.png',   file: 'hero.png' },
     // { url: 'https://example.com/logo.jpg',   file: 'logo.jpg' },
+  ],
+
+  /** External videos to download (optional — auto-scanned if empty) */
+  videoSources: [
+    // { url: 'https://example.com/demo.mp4',   file: 'demo.mp4' },
   ],
 };
