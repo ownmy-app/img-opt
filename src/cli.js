@@ -26,16 +26,21 @@ const SCRIPTS = {
   all:      path.join(__dirname, 'run-all.js'),
 };
 
-function run(scriptPath) {
+// Flags that should be forwarded to sub-scripts
+const FORWARD_FLAGS = ['--dry-run'];
+
+function run(scriptPath, extraArgs = []) {
   return new Promise((resolve, reject) => {
-    const child = spawn('node', [scriptPath], { stdio: 'inherit', cwd: process.cwd() });
+    const child = spawn('node', [scriptPath, ...extraArgs], { stdio: 'inherit', cwd: process.cwd() });
     child.on('close', (code) => (code === 0 ? resolve() : reject(new Error(`Exit ${code}`))));
   });
 }
 
-const [,, cmd = 'all'] = process.argv;
+const args = process.argv.slice(2);
+const cmd = args.find((a) => !a.startsWith('-')) || 'all';
+const flags = args.filter((a) => FORWARD_FLAGS.includes(a));
 
-if (cmd === '--help' || cmd === '-h') {
+if (cmd === '--help' || cmd === '-h' || args.includes('--help') || args.includes('-h')) {
   console.log([
     'img-opt — download, compress, and rewrite image + video assets',
     '',
@@ -46,6 +51,9 @@ if (cmd === '--help' || cmd === '-h') {
     '  npx img-opt compress       # convert PNG/JPG → WebP via Sharp',
     '  npx img-opt video          # convert MP4/MOV → WebM via ffmpeg',
     '  npx img-opt replace        # rewrite external URLs in source files',
+    '',
+    'Flags:',
+    '  --dry-run                  # show what would be replaced without modifying files',
     '',
     'Auto-scan: when no sources are configured, img-opt scans your codebase',
     'for external image and video URLs automatically. No config file needed.',
@@ -63,4 +71,4 @@ if (!script) {
   process.exit(1);
 }
 
-run(script).catch((e) => { console.error(e.message); process.exit(1); });
+run(script, flags).catch((e) => { console.error(e.message); process.exit(1); });

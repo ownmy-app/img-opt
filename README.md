@@ -215,6 +215,43 @@ Run as part of your build:
 
 ---
 
+## Troubleshooting
+
+### URLs not being replaced
+
+Run the replace step with `--dry-run` to see what would happen without modifying files:
+
+```bash
+npx img-opt replace --dry-run
+```
+
+Common causes:
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `[skip] No .webp for: <url>` | Image was not downloaded or compressed | Run `npx img-opt download` then `npx img-opt compress` |
+| `No replacements to apply` | No `.webp` files in `public/images/` | Run the full pipeline: `npx img-opt` |
+| `Replaced 0 URL(s)` | URLs were mapped but not found in source files | Check `replaceInDirs` includes your source directories |
+| Scanned 0 files | `replaceInDirs` doesn't match your project structure | Set `replaceInDirs` in `image-assets.config.js` (e.g. `['app', 'pages', 'components']` for Next.js) |
+
+### URLs with query parameters (e.g. Unsplash)
+
+URLs like `https://images.unsplash.com/photo-123?w=1920&q=80` are handled automatically. The scanner captures the full URL including query params, and the replacer matches the exact string in your source files. If replacement fails, use `--dry-run` to verify the URL is being detected and the `.webp` file exists.
+
+### Debugging the pipeline
+
+Run each step individually to isolate issues:
+
+```bash
+npx img-opt scan        # 1. verify URLs are detected
+npx img-opt download    # 2. verify images download
+npx img-opt compress    # 3. verify .webp files are created
+npx img-opt replace --dry-run  # 4. preview replacements
+npx img-opt replace     # 5. apply replacements
+```
+
+---
+
 ## Contributing
 
 PRs welcome. Run tests with `npm test`.

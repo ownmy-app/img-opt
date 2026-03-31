@@ -185,7 +185,7 @@ export async function scanForUrls({ projectRoot, scanDirs, scanExtensions, ignor
   return { images, videos };
 }
 
-// ── CLI entry ───────────────────────────────────────────────────────────
+// ── CLI entry (only runs when this file is executed directly) ────────────
 async function main() {
   const { config, projectRoot } = await getConfig();
 
@@ -227,7 +227,13 @@ async function main() {
   console.log('\nRun `npx img-opt` to download and optimize all found assets.');
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+// Only run CLI main() when this file is executed directly (not when imported).
+import { fileURLToPath as _fileURLToPath } from 'url';
+const _thisFile = _fileURLToPath(import.meta.url);
+const _entryFile = process.argv[1] ? path.resolve(process.argv[1]) : '';
+if (_thisFile === _entryFile) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

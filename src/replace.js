@@ -5,7 +5,7 @@
  *   - Local .png/.jpg/.jpeg → .webp  (both in imagesDir and in-place local assets)
  *   - Local .mp4/.mov/.avi/.mkv/.m4v → .webm
  *
- * Run from project root: npx img-opt replace
+ * Run from project root: npx img-opt replace [--dry-run]
  */
 
 import fs from 'fs';
@@ -13,7 +13,10 @@ import path from 'path';
 import { getConfig } from './lib/get-config.js';
 import { walkDir } from './lib/walk-dir.js';
 import { buildIgnoreFilter } from './lib/ignore.js';
-import { scanForUrls } from './scan.js';
+import { scanForUrls, urlToFilename } from './scan.js';
+
+const argv = process.argv.slice(2);
+const DRY_RUN = argv.includes('--dry-run');
 
 function escapeRegex(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -24,7 +27,39 @@ function webPath(dir) {
   return '/' + (raw.replace(/^public\/?/, '') || 'images');
 }
 
+/**
+ * Strip query string and fragment from a URL.
+ * e.g. "https://images.unsplash.com/photo-123?w=1920&q=80" → "https://images.unsplash.com/photo-123"
+ */
+function stripQuery(url) {
+  try {
+    const u = new URL(url);
+    return u.origin + u.pathname;
+  } catch {
+    return url.split('?')[0].split('#')[0];
+  }
+}
+
+/**
+ * Build a lookup from sanitized base name → .webp filename for all .webp files
+ * currently in imagesDir. Used as a fallback when the scanner's predicted filename
+ * doesn't exactly match what's on disk (e.g. due to dedup suffixes or renames).
+ */
+function buildWebpLookup(dir) {
+  const lookup = new Map();
+  if (!fs.existsSync(dir)) return lookup;
+  for (const f of fs.readdirSync(dir)) {
+    if (f.toLowerCase().endsWith('.webp')) {
+      const base = path.basename(f, '.webp');
+      lookup.set(base, f);
+    }
+  }
+  return lookup;
+}
+
 async function main() {
+  if (DRY_RUN) console.log('[dry-run] No files will be modified.\n');
+
   const { config, projectRoot } = await getConfig();
   const imagesDir = path.join(projectRoot, config.imagesDir);
   const videosDir = path.join(projectRoot, config.videosDir);
@@ -50,14 +85,49 @@ async function main() {
     videoSources = scanResult.videos;
   }
 
+  // Build a lookup of all .webp files on disk for fallback matching
+  const webpOnDisk = buildWebpLookup(imagesDir);
+
   // Map each scanned/configured image URL → /images/base.webp
+  let skippedImages = 0;
   for (const { url, file } of imageSources) {
     const base = path.basename(file, path.extname(file));
     const webpFile = `${base}.webp`;
-    // Only replace if the .webp file actually exists (was downloaded + compressed)
+
+    // Primary check: exact predicted filename
     if (fs.existsSync(path.join(imagesDir, webpFile))) {
       replacements.push({ from: url, to: `${imagesDirWeb}/${webpFile}` });
+      continue;
     }
+
+    // Fallback: try deriving filename from URL without query params
+    const bareUrl = stripQuery(url);
+    if (bareUrl !== url) {
+      const bareFilename = urlToFilename(bareUrl);
+      const bareBase = path.basename(bareFilename, path.extname(bareFilename));
+      const bareWebp = `${bareBase}.webp`;
+      if (fs.existsSync(path.join(imagesDir, bareWebp))) {
+        replacements.push({ from: url, to: `${imagesDirWeb}/${bareWebp}` });
+        continue;
+      }
+    }
+
+    // Fallback: check if webp file exists on disk via lookup (handles renames)
+    if (webpOnDisk.has(base)) {
+      const diskFile = webpOnDisk.get(base);
+      replacements.push({ from: url, to: `${imagesDirWeb}/${diskFile}` });
+      continue;
+    }
+
+    // No .webp found — log and skip
+    skippedImages++;
+    console.warn(`  [skip] No .webp for: ${url}`);
+    console.warn(`         Expected: ${path.join(config.imagesDir, webpFile)}`);
+  }
+
+  if (skippedImages > 0) {
+    console.warn(`\n  ${skippedImages} image URL(s) skipped (no .webp file found).`);
+    console.warn('  Run "npx img-opt download" then "npx img-opt compress" first.\n');
   }
 
   // ── Local image extension replacements in imagesDir (.png/.jpg → .webp)
@@ -115,12 +185,20 @@ async function main() {
   }
 
   // ── Video source URL replacements ──────────────────────────────────
+  let skippedVideos = 0;
   for (const { url, file } of videoSources) {
     const base = path.basename(file, path.extname(file));
     const webmFile = `${base}.webm`;
     if (fs.existsSync(path.join(videosDir, webmFile))) {
       replacements.push({ from: url, to: `${videosDirWeb}/${webmFile}` });
+    } else {
+      skippedVideos++;
+      console.warn(`  [skip] No .webm for: ${url}`);
+      console.warn(`         Expected: ${path.join(config.videosDir, webmFile)}`);
     }
+  }
+  if (skippedVideos > 0) {
+    console.warn(`\n  ${skippedVideos} video URL(s) skipped (no .webm file found).\n`);
   }
 
   // ── Local video extension replacements in videosDir (.mp4/.mov → .webm)
@@ -180,10 +258,17 @@ async function main() {
     walkDir(d, exts, allFiles);
   }
 
+  if (replacements.length === 0) {
+    console.log('No replacements to apply. Check warnings above for details.');
+    return;
+  }
+
   let totalReplaced = 0;
+  let filesChanged = 0;
   for (const filePath of allFiles) {
     let content = fs.readFileSync(filePath, 'utf8');
     let changed = false;
+    const fileReplacements = [];
     for (const { from, to } of replacements) {
       if (from === to) continue;
       const count = (content.match(new RegExp(escapeRegex(from), 'g')) || []).length;
@@ -191,14 +276,27 @@ async function main() {
         content = content.split(from).join(to);
         changed = true;
         totalReplaced += count;
+        fileReplacements.push({ from, to, count });
       }
     }
     if (changed) {
-      fs.writeFileSync(filePath, content);
-      console.log('Updated:', path.relative(projectRoot, filePath));
+      const relPath = path.relative(projectRoot, filePath);
+      if (DRY_RUN) {
+        console.log(`[dry-run] Would update: ${relPath}`);
+        for (const { from, to, count } of fileReplacements) {
+          console.log(`  ${count}x: ${from.length > 80 ? from.substring(0, 77) + '...' : from}`);
+          console.log(`     → ${to}`);
+        }
+      } else {
+        fs.writeFileSync(filePath, content);
+        console.log('Updated:', relPath);
+      }
+      filesChanged++;
     }
   }
-  console.log(`\nDone. Replaced ${totalReplaced} URL(s) across ${allFiles.length} files.`);
+
+  const verb = DRY_RUN ? 'Would replace' : 'Replaced';
+  console.log(`\nDone. ${verb} ${totalReplaced} URL(s) in ${filesChanged} file(s) (scanned ${allFiles.length} files).`);
 }
 
 main().catch((err) => {
