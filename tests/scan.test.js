@@ -12,6 +12,8 @@ const CLI = path.join(__dirname, '..', 'src', 'scan.js');
 function mkTmp() {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'img-opt-scan-'));
   fs.mkdirSync(path.join(tmp, 'src'), { recursive: true });
+  // Config files use ESM (export default) so the temp project needs "type": "module"
+  fs.writeFileSync(path.join(tmp, 'package.json'), '{"type":"module"}');
   return tmp;
 }
 
