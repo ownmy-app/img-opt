@@ -1,21 +1,11 @@
 # img-opt
 
+Built by the [Nometria](https://nometria.com) team — we take AI-built apps to production.
+
 [![npm version](https://img.shields.io/npm/v/%40nometria-ai%2Fimg-opt.svg)](https://www.npmjs.com/package/@nometria-ai/img-opt)
 [![npm downloads](https://img.shields.io/npm/dm/%40nometria-ai%2Fimg-opt.svg)](https://www.npmjs.com/package/@nometria-ai/img-opt)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
-<div align="center">
-
-**[Nometria](https://nometria.com)** takes AI-built apps to production on AWS — secure, scalable, ready for real users.
-
-<sub><i>Every AI-generated app we deploy has unoptimized images. We built img-opt to compress and localize assets automatically -- cutting load times by 60-80% with zero config.</i></sub>
-
-[![Deploy with Nometria](https://img.shields.io/badge/Deploy%20with-Nometria-111827?style=for-the-badge)](https://nometria.com)
-
-</div>
-
----
 
 > Auto-scan your codebase for external images & videos, compress to WebP/WebM, rewrite all URLs. Zero config.
 
@@ -274,6 +264,3 @@ PRs welcome. Run tests with `npm test`.
 
 MIT - [Nometria](https://nometria.com)
 
----
-
-<p align="center">Made with ❤️ by <a href="https://nometria.com">Nometria</a> — deploy AI apps to production in one click</p>
