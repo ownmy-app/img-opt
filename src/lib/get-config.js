@@ -15,7 +15,7 @@ const DEFAULTS = {
   videosDir: 'public/videos',
   replaceInDirs: ['src'],
   replaceExtensions: ['.js', '.jsx', '.ts', '.tsx', '.html', '.vue', '.svelte', '.md', '.mdx', '.css', '.astro'],
-  compress: { format: 'webp', quality: 82, removeOriginals: true },
+  compress: { format: 'webp', quality: 82, effort: undefined, concurrency: 4, removeOriginals: true },
   videoCompress: { format: 'webm', quality: 'good', maxWidth: 1920, removeOriginals: true },
   autoScan: true,
   compressLocal: true,
