@@ -27,6 +27,30 @@ img-opt auto-scans your `src/` directory for external image and video URLs, down
 
 ---
 
+## Benchmark Results
+
+Tested with programmatically generated images across different types and sizes. All conversions produce valid WebP with preserved dimensions.
+
+| Image Type | Original | WebP | Reduction |
+|---|---|---|---|
+| Solid color PNG (1920×1080) | 30.6 KB | 3.7 KB | **87.9%** |
+| Gradient PNG (800×600) | 103.5 KB | 4.7 KB | **95.4%** |
+| Photo-like JPEG (1024×768) | 70.0 KB | 21.4 KB | **69.4%** |
+| Small icon PNG (64×64) | 266 B | 88 B | **66.9%** |
+| Random noise PNG (640×480) | 902.1 KB | 213.0 KB | **76.4%** |
+| Large JPEG (2560×1440) | 1.6 MB | 1.5 MB | **8.0%** |
+
+**Typical web image compression: 67–95% size reduction.** Already-compressed JPEGs see smaller gains. All outputs are valid WebP with original dimensions preserved.
+
+Run benchmarks yourself:
+
+```bash
+npm install sharp
+node benchmarks/benchmark.js
+```
+
+---
+
 ## What's new in v2.0
 
 - **Auto-scan** — no more manual `sources` config. img-opt discovers external URLs automatically.

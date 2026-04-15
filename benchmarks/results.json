@@ -1,0 +1,120 @@
+{
+  "compression": {
+    "results": [
+      {
+        "name": "Solid color PNG (1920x1080)",
+        "original_bytes": 31350,
+        "compressed_bytes": 3796,
+        "reduction_pct": 87.9
+      },
+      {
+        "name": "Gradient PNG (800x600)",
+        "original_bytes": 105980,
+        "compressed_bytes": 4832,
+        "reduction_pct": 95.4
+      },
+      {
+        "name": "Random noise PNG (640x480)",
+        "original_bytes": 923793,
+        "compressed_bytes": 218066,
+        "reduction_pct": 76.4
+      },
+      {
+        "name": "Photo-like JPEG (1024x768)",
+        "original_bytes": 71635,
+        "compressed_bytes": 21900,
+        "reduction_pct": 69.4
+      },
+      {
+        "name": "Small icon PNG (64x64)",
+        "original_bytes": 266,
+        "compressed_bytes": 88,
+        "reduction_pct": 66.9
+      },
+      {
+        "name": "Large JPEG (2560x1440)",
+        "original_bytes": 1677477,
+        "compressed_bytes": 1543176,
+        "reduction_pct": 8
+      }
+    ],
+    "avgReduction": 36.2
+  },
+  "speed": [
+    {
+      "name": "Solid color PNG (1920x1080)",
+      "avg_ms": 62.3,
+      "mbps": 0.5
+    },
+    {
+      "name": "Gradient PNG (800x600)",
+      "avg_ms": 21.4,
+      "mbps": 4.7
+    },
+    {
+      "name": "Random noise PNG (640x480)",
+      "avg_ms": 50.2,
+      "mbps": 17.6
+    },
+    {
+      "name": "Photo-like JPEG (1024x768)",
+      "avg_ms": 40.5,
+      "mbps": 1.7
+    },
+    {
+      "name": "Small icon PNG (64x64)",
+      "avg_ms": 0.9,
+      "mbps": 0.3
+    },
+    {
+      "name": "Large JPEG (2560x1440)",
+      "avg_ms": 443.1,
+      "mbps": 3.6
+    }
+  ],
+  "quality": [
+    {
+      "name": "Solid color PNG (1920x1080)",
+      "valid_webp": true,
+      "dimensions_preserved": true,
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "name": "Gradient PNG (800x600)",
+      "valid_webp": true,
+      "dimensions_preserved": true,
+      "width": 800,
+      "height": 600
+    },
+    {
+      "name": "Random noise PNG (640x480)",
+      "valid_webp": true,
+      "dimensions_preserved": true,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "name": "Photo-like JPEG (1024x768)",
+      "valid_webp": true,
+      "dimensions_preserved": true,
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "name": "Small icon PNG (64x64)",
+      "valid_webp": true,
+      "dimensions_preserved": true,
+      "width": 64,
+      "height": 64
+    },
+    {
+      "name": "Large JPEG (2560x1440)",
+      "valid_webp": true,
+      "dimensions_preserved": true,
+      "width": 2560,
+      "height": 1440
+    }
+  ],
+  "timestamp": "2026-04-15T06:28:31.971Z"
+}
