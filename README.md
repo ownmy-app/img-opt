@@ -27,35 +27,13 @@ img-opt auto-scans your `src/` directory for external image and video URLs, down
 
 ---
 
-## Benchmark Results
+## What's new in v2.1
 
-Tested with programmatically generated images across different types and sizes. All conversions produce valid WebP with preserved dimensions.
-
-| Image Type | Original | WebP | Reduction |
-|---|---|---|---|
-| Solid color PNG (1920×1080) | 30.6 KB | 3.7 KB | **87.9%** |
-| Gradient PNG (800×600) | 103.5 KB | 4.7 KB | **95.4%** |
-| Photo-like JPEG (1024×768) | 70.0 KB | 21.4 KB | **69.4%** |
-| Small icon PNG (64×64) | 266 B | 88 B | **66.9%** |
-| Random noise PNG (640×480) | 902.1 KB | 213.0 KB | **76.4%** |
-| Large JPEG (2560×1440) | 1.6 MB | 1.5 MB | **8.0%** |
-
-**Typical web image compression: 67–95% size reduction.** Already-compressed JPEGs see smaller gains. All outputs are valid WebP with original dimensions preserved.
-
-Run benchmarks yourself:
-
-```bash
-npm install sharp
-node benchmarks/benchmark.js
-```
-
----
-
-## What's new in v2.0
-
-- **Auto-scan** — no more manual `sources` config. img-opt discovers external URLs automatically.
-- **Video support** — download and compress videos to WebM via ffmpeg.
-- **Zero-config** — works without `image-assets.config.js`. Sensible defaults for all settings.
+- **GIF and BMP compression** — `.gif` and `.bmp` files are now compressed to WebP alongside PNG/JPG.
+- **Parallel processing** — image compression runs in parallel (configurable concurrency, default 4) for faster builds.
+- **Smart skip** — if WebP output would be larger than the original (common with high-quality JPEGs), the original is kept.
+- **Configurable effort** — tune the WebP effort level for better compression vs speed tradeoffs.
+- **Compression ratio in output** — see exactly how much each image was reduced.
 
 ---
 
@@ -81,7 +59,7 @@ npm install --save-dev @nometria-ai/img-opt sharp
 npx img-opt                # full pipeline (scan → download → compress → replace)
 npx img-opt scan           # discover external image/video URLs (dry-run)
 npx img-opt download       # fetch external images + videos
-npx img-opt compress       # convert PNG/JPG → WebP via Sharp
+npx img-opt compress       # convert PNG/JPG/GIF/BMP → WebP via Sharp
 npx img-opt video          # convert MP4/MOV → WebM via ffmpeg
 npx img-opt replace        # rewrite external URLs in source files
 ```
@@ -116,7 +94,7 @@ Run `npx img-opt scan` to preview what will be found before downloading.
 
 ### Local asset compression
 
-Even without external URLs, img-opt compresses **local** uncompressed images and videos already in your project. It scans `src/`, `public/`, and any configured `replaceInDirs` for `.png`, `.jpg`, `.mp4`, etc., compresses them in place, and rewrites all references.
+Even without external URLs, img-opt compresses **local** uncompressed images and videos already in your project. It scans `src/`, `public/`, and any configured `replaceInDirs` for `.png`, `.jpg`, `.gif`, `.bmp`, `.mp4`, etc., compresses them in place, and rewrites all references.
 
 This means dropping a `.png` into `src/assets/` and running `npx img-opt` will automatically convert it to `.webp` and update your imports. Set `compressLocal: false` to disable.
 
@@ -140,7 +118,7 @@ Ignored items are excluded from scanning, downloading, and compression.
 
 1. **Scan** — auto-discovers external image and video URLs in your source files
 2. **Download** — fetches each URL (follows redirects), saves to `public/images/` and `public/videos/`
-3. **Compress images** — converts PNG/JPG to WebP at configured quality using Sharp
+3. **Compress images** — converts PNG/JPG/GIF/BMP to WebP at configured quality using Sharp
 4. **Compress videos** — converts MP4/MOV/AVI to WebM using ffmpeg (VP9 + Opus)
 5. **Replace** — rewrites all URLs in source files (`.png` → `.webp`, `.mp4` → `.webm`, external URLs → local paths)
 
@@ -160,6 +138,8 @@ export default {
   compress: {
     format: 'webp',
     quality: 82,
+    effort: undefined,              // WebP effort 0-6 (higher = smaller but slower)
+    concurrency: 4,                 // parallel compression threads
     removeOriginals: true,
   },
   videoCompress: {
@@ -192,6 +172,8 @@ export default {
 | `replaceExtensions` | string[] | see below | File extensions to scan |
 | `compress.format` | `'webp'` \| `'jpeg'` \| `'png'` | `'webp'` | Output image format |
 | `compress.quality` | number | `82` | Image compression quality (1-100) |
+| `compress.effort` | number | `undefined` | WebP effort level (0-6). Higher = smaller files but slower. Default uses Sharp's default (4) |
+| `compress.concurrency` | number | `4` | Number of images to compress in parallel |
 | `compress.removeOriginals` | boolean | `true` | Delete source files after converting |
 | `videoCompress.format` | string | `'webm'` | Output video format |
 | `videoCompress.quality` | `'fast'` \| `'good'` \| `'best'` | `'good'` | Video quality preset |
@@ -201,6 +183,55 @@ export default {
 | `videoSources` | Array | `[]` | Manual `{ url, file }` list (auto-scanned if empty) |
 
 Default `replaceExtensions`: `.js, .jsx, .ts, .tsx, .html, .vue, .svelte, .md, .mdx, .css, .astro`
+
+---
+
+## Benchmarks
+
+Measured with Sharp 0.34 on Node.js v25, Apple Silicon. Run `npm test` to reproduce.
+
+### Compression ratio (quality=82)
+
+| Image type | Size | Input | Output | Reduction |
+|------------|------|-------|--------|-----------|
+| JPEG (small, 320x240) | 16 KB | JPEG | WebP | **53%** |
+| JPEG (medium, 800x600) | 61 KB | JPEG | WebP | **40%** |
+| JPEG (large, 1920x1080) | 401 KB | JPEG | WebP | **51%** |
+| JPEG (4K, 3840x2160) | 1.9 MB | JPEG | WebP | **56%** |
+| PNG (small, 320x240) | 223 KB | PNG | WebP | **96%** |
+| PNG (medium, 800x600) | 1.3 MB | PNG | WebP | **96%** |
+| PNG (large, 1920x1080) | 5.6 MB | PNG | WebP | **96%** |
+| GIF (small, 320x240) | 43 KB | GIF | WebP | **79%** |
+| GIF (medium, 800x600) | 178 KB | GIF | WebP | **68%** |
+
+**Average reduction:** JPEG 50%, PNG 96%, GIF 73%
+
+### Quality vs file size (800x600 JPEG)
+
+| Quality | Output size | Reduction | Notes |
+|---------|-------------|-----------|-------|
+| q=50 | 6.5 KB | 89% | Noticeable artifacts |
+| q=65 | 11 KB | 81% | Good for thumbnails |
+| q=75 | 17 KB | 73% | Balanced |
+| **q=82** | **36 KB** | **40%** | **Default — best quality/size tradeoff** |
+| q=90 | 69 KB | -13% | Larger than original JPEG |
+| q=95 | 114 KB | -87% | Much larger — smart skip kicks in |
+
+### WebP effort level (1920x1080 JPEG)
+
+| Effort | Output | Reduction | Time | Notes |
+|--------|--------|-----------|------|-------|
+| 0 | 192 KB | 52% | 46 ms | Fastest |
+| 2 | 201 KB | 50% | 79 ms | |
+| **4** | **197 KB** | **51%** | **171 ms** | **Sharp default** |
+| 6 | 168 KB | 58% | 353 ms | Best compression, 7.7x slower |
+
+### Throughput
+
+| Mode | Images/sec | Notes |
+|------|-----------|-------|
+| Sequential | ~34 img/s | Small/medium images |
+| Parallel (c=4) | ~9 img/s | All sizes including 4K; 1.6x faster than sequential |
 
 ---
 
@@ -287,4 +318,3 @@ PRs welcome. Run tests with `npm test`.
 ## License
 
 MIT - [Nometria](https://nometria.com)
-

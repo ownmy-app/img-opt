@@ -1,120 +1,233 @@
 {
-  "compression": {
-    "results": [
-      {
-        "name": "Solid color PNG (1920x1080)",
-        "original_bytes": 31350,
-        "compressed_bytes": 3796,
-        "reduction_pct": 87.9
-      },
-      {
-        "name": "Gradient PNG (800x600)",
-        "original_bytes": 105980,
-        "compressed_bytes": 4832,
-        "reduction_pct": 95.4
-      },
-      {
-        "name": "Random noise PNG (640x480)",
-        "original_bytes": 923793,
-        "compressed_bytes": 218066,
-        "reduction_pct": 76.4
-      },
-      {
-        "name": "Photo-like JPEG (1024x768)",
-        "original_bytes": 71635,
-        "compressed_bytes": 21900,
-        "reduction_pct": 69.4
-      },
-      {
-        "name": "Small icon PNG (64x64)",
-        "original_bytes": 266,
-        "compressed_bytes": 88,
-        "reduction_pct": 66.9
-      },
-      {
-        "name": "Large JPEG (2560x1440)",
-        "original_bytes": 1677477,
-        "compressed_bytes": 1543176,
-        "reduction_pct": 8
-      }
-    ],
-    "avgReduction": 36.2
+  "timestamp": "2026-04-15T06:38:14.754Z",
+  "nodeVersion": "v25.2.1",
+  "sharpVersion": "0.34.5",
+  "compression": [
+    {
+      "label": "small-photo",
+      "inputFormat": "jpg",
+      "inputSize": 16650,
+      "outputSize": 8682,
+      "compressionRatio": 47.9,
+      "timeMs": 9.73,
+      "isValidWebP": true,
+      "outputWidth": 320,
+      "outputHeight": 240,
+      "quality": 82
+    },
+    {
+      "label": "small-graphic",
+      "inputFormat": "png",
+      "inputSize": 228242,
+      "outputSize": 9026,
+      "compressionRatio": 96,
+      "timeMs": 9.6,
+      "isValidWebP": true,
+      "outputWidth": 320,
+      "outputHeight": 240,
+      "quality": 82
+    },
+    {
+      "label": "small-anim",
+      "inputFormat": "gif",
+      "inputSize": 43920,
+      "outputSize": 9476,
+      "compressionRatio": 78.4,
+      "timeMs": 8.26,
+      "isValidWebP": true,
+      "outputWidth": 320,
+      "outputHeight": 240,
+      "quality": 82
+    },
+    {
+      "label": "medium-photo",
+      "inputFormat": "jpg",
+      "inputSize": 62082,
+      "outputSize": 37010,
+      "compressionRatio": 40.4,
+      "timeMs": 37.61,
+      "isValidWebP": true,
+      "outputWidth": 800,
+      "outputHeight": 600,
+      "quality": 82
+    },
+    {
+      "label": "medium-graphic",
+      "inputFormat": "png",
+      "inputSize": 1374465,
+      "outputSize": 50124,
+      "compressionRatio": 96.4,
+      "timeMs": 49.22,
+      "isValidWebP": true,
+      "outputWidth": 800,
+      "outputHeight": 600,
+      "quality": 82
+    },
+    {
+      "label": "medium-anim",
+      "inputFormat": "gif",
+      "inputSize": 182094,
+      "outputSize": 56972,
+      "compressionRatio": 68.7,
+      "timeMs": 42.05,
+      "isValidWebP": true,
+      "outputWidth": 800,
+      "outputHeight": 600,
+      "quality": 82
+    },
+    {
+      "label": "large-photo",
+      "inputFormat": "jpg",
+      "inputSize": 410926,
+      "outputSize": 201918,
+      "compressionRatio": 50.9,
+      "timeMs": 168.02,
+      "isValidWebP": true,
+      "outputWidth": 1920,
+      "outputHeight": 1080,
+      "quality": 82
+    },
+    {
+      "label": "large-graphic",
+      "inputFormat": "png",
+      "inputSize": 5883457,
+      "outputSize": 218194,
+      "compressionRatio": 96.3,
+      "timeMs": 201.06,
+      "isValidWebP": true,
+      "outputWidth": 1920,
+      "outputHeight": 1080,
+      "quality": 82
+    },
+    {
+      "label": "xlarge-photo",
+      "inputFormat": "jpg",
+      "inputSize": 1965938,
+      "outputSize": 871758,
+      "compressionRatio": 55.7,
+      "timeMs": 681.62,
+      "isValidWebP": true,
+      "outputWidth": 3840,
+      "outputHeight": 2160,
+      "quality": 82
+    }
+  ],
+  "qualitySweep": [
+    {
+      "label": "medium-photo q=50",
+      "inputFormat": "jpg",
+      "inputSize": 62082,
+      "outputSize": 7008,
+      "compressionRatio": 88.7,
+      "timeMs": 25.94,
+      "quality": 50
+    },
+    {
+      "label": "medium-photo q=65",
+      "inputFormat": "jpg",
+      "inputSize": 62082,
+      "outputSize": 11890,
+      "compressionRatio": 80.8,
+      "timeMs": 28.21,
+      "quality": 65
+    },
+    {
+      "label": "medium-photo q=75",
+      "inputFormat": "jpg",
+      "inputSize": 62082,
+      "outputSize": 18974,
+      "compressionRatio": 69.4,
+      "timeMs": 31.15,
+      "quality": 75
+    },
+    {
+      "label": "medium-photo q=82",
+      "inputFormat": "jpg",
+      "inputSize": 62082,
+      "outputSize": 37010,
+      "compressionRatio": 40.4,
+      "timeMs": 37.34,
+      "quality": 82
+    },
+    {
+      "label": "medium-photo q=90",
+      "inputFormat": "jpg",
+      "inputSize": 62082,
+      "outputSize": 72256,
+      "compressionRatio": -16.4,
+      "timeMs": 44.13,
+      "quality": 90
+    },
+    {
+      "label": "medium-photo q=95",
+      "inputFormat": "jpg",
+      "inputSize": 62082,
+      "outputSize": 115626,
+      "compressionRatio": -86.2,
+      "timeMs": 49.19,
+      "quality": 95
+    }
+  ],
+  "throughput": {
+    "totalImages": 18,
+    "totalTimeMs": 456.79,
+    "imagesPerSecond": 39.41,
+    "quality": 82
   },
-  "speed": [
+  "parallelism": [
     {
-      "name": "Solid color PNG (1920x1080)",
-      "avg_ms": 62.3,
-      "mbps": 0.5
+      "concurrency": 1,
+      "totalImages": 9,
+      "totalTimeMs": 1199.47,
+      "imagesPerSecond": 7.5
     },
     {
-      "name": "Gradient PNG (800x600)",
-      "avg_ms": 21.4,
-      "mbps": 4.7
+      "concurrency": 2,
+      "totalImages": 9,
+      "totalTimeMs": 977.4,
+      "imagesPerSecond": 9.21
     },
     {
-      "name": "Random noise PNG (640x480)",
-      "avg_ms": 50.2,
-      "mbps": 17.6
+      "concurrency": 4,
+      "totalImages": 9,
+      "totalTimeMs": 924.42,
+      "imagesPerSecond": 9.74
     },
     {
-      "name": "Photo-like JPEG (1024x768)",
-      "avg_ms": 40.5,
-      "mbps": 1.7
-    },
-    {
-      "name": "Small icon PNG (64x64)",
-      "avg_ms": 0.9,
-      "mbps": 0.3
-    },
-    {
-      "name": "Large JPEG (2560x1440)",
-      "avg_ms": 443.1,
-      "mbps": 3.6
+      "concurrency": 8,
+      "totalImages": 9,
+      "totalTimeMs": 927.16,
+      "imagesPerSecond": 9.71
     }
   ],
-  "quality": [
+  "effort": [
     {
-      "name": "Solid color PNG (1920x1080)",
-      "valid_webp": true,
-      "dimensions_preserved": true,
-      "width": 1920,
-      "height": 1080
+      "label": "large-photo effort=0",
+      "effort": 0,
+      "outputSize": 196266,
+      "compressionRatio": 52.2,
+      "timeMs": 44.52
     },
     {
-      "name": "Gradient PNG (800x600)",
-      "valid_webp": true,
-      "dimensions_preserved": true,
-      "width": 800,
-      "height": 600
+      "label": "large-photo effort=2",
+      "effort": 2,
+      "outputSize": 206288,
+      "compressionRatio": 49.8,
+      "timeMs": 79.41
     },
     {
-      "name": "Random noise PNG (640x480)",
-      "valid_webp": true,
-      "dimensions_preserved": true,
-      "width": 640,
-      "height": 480
+      "label": "large-photo effort=4",
+      "effort": 4,
+      "outputSize": 201918,
+      "compressionRatio": 50.9,
+      "timeMs": 166.27
     },
     {
-      "name": "Photo-like JPEG (1024x768)",
-      "valid_webp": true,
-      "dimensions_preserved": true,
-      "width": 1024,
-      "height": 768
-    },
-    {
-      "name": "Small icon PNG (64x64)",
-      "valid_webp": true,
-      "dimensions_preserved": true,
-      "width": 64,
-      "height": 64
-    },
-    {
-      "name": "Large JPEG (2560x1440)",
-      "valid_webp": true,
-      "dimensions_preserved": true,
-      "width": 2560,
-      "height": 1440
+      "label": "large-photo effort=6",
+      "effort": 6,
+      "outputSize": 173310,
+      "compressionRatio": 57.8,
+      "timeMs": 350.03
     }
-  ],
-  "timestamp": "2026-04-15T06:28:31.971Z"
+  ]
 }
